@@ -1,0 +1,29 @@
+{
+  "name": "react-reple",
+  "version": "0.1.0",
+  "description": "next-example",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next",
+    "build": "next build",
+    "start": "next start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shuushu/nextjs.git"
+  },
+  "keywords": [
+    "socketIo"
+  ],
+  "author": "hosoon2@gmail.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shuushu/nextjs/issues"
+  },
+  "homepage": "https://github.com/shuushu/nextjs#readme",
+  "dependencies": {
+    "next": "^9.1.2",
+    "react": "^16.11.0",
+    "react-dom": "^16.11.0"
+  }
+}
