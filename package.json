@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "next",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "lint-fix": "tslint --fix --config tslint.json \"{pages, components}/*.{ts,tsx}\" verbose"
   },
   "repository": {
     "type": "git",
