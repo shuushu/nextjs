@@ -2,22 +2,33 @@ import {NextPage} from "next";
 import * as React from "react";
 
 import Header from "@/Header";
-import {Props} from "./props";
+import Form from "@/Form";
 
-interface HelloProps {
-    name: string;
+interface Props {
+    userAgent?: string;
 }
 
-const Hello = (props: HelloProps) => <h1>{props.name}</h1>;
+const Index: NextPage<Props> = ({ userAgent }) => {
+    const [count, setCount] = React.useState(0)
+    const [str, setValue] = React.useState('shushu')
 
-const Index: NextPage<Props> = ({ userAgent }) => (
-    <main>
-        <Header />
-        Your user agent: {userAgent}
-        <div>dsadsad</div>
-        <Hello name="shushu" />
-    </main>
-);
+    function onInputChange(e: React.BaseSyntheticEvent) {
+        setValue(e.target.value)
+    }
+
+    return (
+        <main>
+            <Header />
+            Your user agent: {userAgent}
+            <p>2222222ou clicked {count} times</p>
+            <p onClick={() => setCount(count + 1)} >click</p>
+
+
+            <Form onInputChange={onInputChange} text={str} />
+        </main>
+    );
+}
+
 
 Index.getInitialProps = async ({ req }) => {
   const userAgent = req ? req.headers["user-agent"] : navigator.userAgent;
