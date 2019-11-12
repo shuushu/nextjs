@@ -1,0 +1,29 @@
+{
+  "rules": {
+    ".read": true,
+    ".write": true,
+    "chat": {
+      "room": {
+        ".indexOn": "master"
+      }
+    },
+    "books": {
+      "list": {
+        ".indexOn": "bookID"
+      },
+      "rent": {
+        ".indexOn": "value"
+      }
+    },
+    "bbs": {
+      ".indexOn": "id"
+    },
+    "nateon": {
+      "message": {
+        "$key": {
+          ".indexOn": "seq"
+        }
+      }
+    }
+  }
+}

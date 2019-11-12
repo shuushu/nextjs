@@ -1,30 +1,62 @@
 import {NextPage} from "next";
-import * as React from "react";
-
+import { BaseSyntheticEvent, useState, useEffect } from "react";
+import { fb } from '../common/firebase';
 import Header from "@/Header";
 import Form from "@/Form";
+
 
 interface Props {
     userAgent?: string;
 }
 
-const Index: NextPage<Props> = ({ userAgent }) => {
-    const [count, setCount] = React.useState(0)
-    const [str, setValue] = React.useState('shushu')
+interface PropsReplyList{
+    [key: string]: any
+}
 
-    function onInputChange(e: React.BaseSyntheticEvent) {
+const Index: NextPage<Props> = ({ userAgent }) => {
+    const [item, setList] = useState<PropsReplyList>({})
+    const [str, setValue] = useState('shushu')
+
+    function onInputChange(e: BaseSyntheticEvent) {
         setValue(e.target.value)
     }
+
+    function clickSubmit() {
+        fb.writeReply(str)
+    }
+
+    const setListItem = Object.keys(item).map((i: string) => {
+        let { time, context } = item[i];
+        return (
+            <div key={`item${time}`}>
+                <h1>{context}</h1>
+                {time}
+            </div>
+        )
+    })
+
+    async function load() {
+        await fb.getList().then((r) => {
+            setList(r)
+        })        
+    }
+
+    useEffect(() => {
+        load()
+    }, [str])
 
     return (
         <main>
             <Header />
             Your user agent: {userAgent}
-            <p>2222222ou clicked {count} times</p>
-            <p onClick={() => setCount(count + 1)} >click</p>
 
+            {setListItem}
 
-            <Form onInputChange={onInputChange} text={str} />
+            <Form 
+                onInputChange={onInputChange} 
+                text={str}
+                clickSubmit={clickSubmit}
+             />
         </main>
     );
 }
