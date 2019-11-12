@@ -4,6 +4,8 @@ import { fb } from '../common/firebase';
 import Header from "@/Header";
 import Form from "@/Form";
 
+import * as firebase from 'firebase/app';
+import "firebase/database";
 
 interface Props {
     userAgent?: string;
@@ -34,15 +36,19 @@ const Index: NextPage<Props> = ({ userAgent }) => {
             </div>
         )
     })
-
-    async function load() {
-        await fb.getList().then((r) => {
-            setList(r)
-        })        
-    }
-
+    
     useEffect(() => {
-        load()
+        let isCancelled = false;
+
+        firebase.database().ref('reply').on('value', result => {
+            if (result.val() && !isCancelled) {
+                setList(result.val())
+            }               
+        })
+
+        return () => {
+            isCancelled = true
+        }
     }, [str])
 
     return (

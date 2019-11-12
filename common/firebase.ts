@@ -1,7 +1,5 @@
 import * as firebase from 'firebase/app';
 import "firebase/database";
-import { resolve } from 'dns';
-import { rejects } from 'assert';
 
 if (!firebase.apps.length) {
     firebase.initializeApp({
@@ -13,7 +11,7 @@ if (!firebase.apps.length) {
 }
 
 const fb = {
-    getList: (): Promise<any []> => {
+    getOnceList: (): Promise<any []> => {
         return new Promise((resolve, reject) => {
             firebase.database().ref('reply').once('value').then(result => {
                 resolve(result.val())
