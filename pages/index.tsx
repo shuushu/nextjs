@@ -1,55 +1,70 @@
-import {NextPage} from "next";
-import { BaseSyntheticEvent, useState, useEffect } from "react";
+import {NextPage} from 'next';
+import { BaseSyntheticEvent, useState, useEffect } from 'react';
 import { fb } from '../common/firebase';
-import Header from "@/Header";
-import Form from "@/Form";
+import Header from '@/Header';
+import Form from '@/Form';
 
 import * as firebase from 'firebase/app';
-import "firebase/database";
+import 'firebase/database';
 
 interface Props {
     userAgent?: string;
 }
 
-interface PropsReplyList{
-    [key: string]: any
+interface PropsReplyList {
+    [key: string]: any;
 }
 
 const Index: NextPage<Props> = ({ userAgent }) => {
-    const [item, setList] = useState<PropsReplyList>({})
-    const [str, setValue] = useState('shushu')
+    const [item, setList] = useState<PropsReplyList>({});
+    const [name, setName] = useState('');
+    const [pw, setPW] = useState('');
+    const [str, setValue] = useState('shushu');
 
     function onInputChange(e: BaseSyntheticEvent) {
-        setValue(e.target.value)
+        setName(e.target.value);
+    }
+
+    function onPasswordChange(e: BaseSyntheticEvent) {
+        setPW(e.target.value);
+    }
+
+    function onTextAreaChange(e: BaseSyntheticEvent) {
+        setValue(e.target.value);
     }
 
     function clickSubmit() {
-        fb.writeReply(str)
+        fb.writeReply({str, name, pw});
+    }
+
+    function removeReply(key: string) {
+        fb.removeReply(key);
     }
 
     const setListItem = Object.keys(item).map((i: string) => {
-        let { time, context } = item[i];
+        const { time, context } = item[i];
         return (
             <div key={`item${time}`}>
                 <h1>{context}</h1>
                 {time}
+                <button onClick={(e: BaseSyntheticEvent) => removeReply(time)}>delete</button>
             </div>
-        )
-    })
-    
+        );
+    });
+
     useEffect(() => {
         let isCancelled = false;
 
-        firebase.database().ref('reply').on('value', result => {
+        firebase.database().ref('reply').on('value', (result: any) => {
             if (result.val() && !isCancelled) {
-                setList(result.val())
-            }               
-        })
+                setList(result.val());
+            }
+        });
 
         return () => {
-            isCancelled = true
-        }
-    }, [str])
+            isCancelled = true;
+        };
+    }, [str]);
 
     return (
         <main>
@@ -58,18 +73,20 @@ const Index: NextPage<Props> = ({ userAgent }) => {
 
             {setListItem}
 
-            <Form 
-                onInputChange={onInputChange} 
+            <Form
+                onInputChange={onInputChange}
+                onPasswordChange={onPasswordChange}
+                onTextAreaChange={onTextAreaChange}
                 text={str}
+                name={name}
                 clickSubmit={clickSubmit}
              />
         </main>
     );
-}
-
+};
 
 Index.getInitialProps = async ({ req }) => {
-  const userAgent = req ? req.headers["user-agent"] : navigator.userAgent;
+  const userAgent = req ? req.headers['user-agent'] : navigator.userAgent;
   return { userAgent };
 };
 export default Index;
