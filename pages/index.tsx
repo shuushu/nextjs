@@ -17,9 +17,11 @@ interface PropsReplyList {
 
 const Index: NextPage<Props> = ({ userAgent }) => {
     const [item, setList] = useState<PropsReplyList>({});
-    const [name, setName] = useState('');
+    const [user, setName] = useState('');
     const [pw, setPW] = useState('');
-    const [str, setValue] = useState('shushu');
+    const [str, setValue] = useState('');
+    const [checkedValue, setCheck] = useState(false)
+    const refArr = Array(3);
 
     function onInputChange(e: BaseSyntheticEvent) {
         setName(e.target.value);
@@ -33,21 +35,61 @@ const Index: NextPage<Props> = ({ userAgent }) => {
         setValue(e.target.value);
     }
 
+    function onChecked() {
+        setCheck(!checkedValue);
+    }
+
     function clickSubmit() {
-        fb.writeReply({str, name, pw});
+        if (str.length > 0) {
+            const params: any = { str };
+            if (!checkedValue) {
+                if (user.length <= 0 ) {
+                    alert('비공개 입력시 아이디 입력 필수');
+                    refArr[0].focus();
+                    return;
+                }
+                if (pw.length <= 0) {
+                    alert('비공개 입력시 비밀번호 입력 필수');
+                    refArr[1].focus();
+                    return;
+                }
+                params.user = user;
+                params.pw = pw;
+            }
+            fb.writeReply(params).then((result) => {
+                if (result) {
+                    setValue('');
+                    setName('');
+                    setPW('');
+                } else {
+                    alert('error');
+                }
+            });
+        } else {
+            alert('내용 입력 하세요');
+            refArr[2].focus();
+        }
+
     }
 
     function removeReply(key: string) {
         fb.removeReply(key);
     }
 
+    function convertoDate(v: string) {
+        const date = new Date(v);
+        return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+    }
+
     const setListItem = Object.keys(item).map((i: string) => {
-        const { time, context } = item[i];
+        const { time, str, user } = item[i];
         return (
             <div key={`item${time}`}>
-                <h1>{context}</h1>
-                {time}
-                <button onClick={(e: BaseSyntheticEvent) => removeReply(time)}>delete</button>
+                <div>
+                    {user} {convertoDate(time)}
+                    {user && <button onClick={() => removeReply(time)}>delete</button> }
+                </div>
+                <p>{str}</p>
             </div>
         );
     });
@@ -72,14 +114,17 @@ const Index: NextPage<Props> = ({ userAgent }) => {
             Your user agent: {userAgent}
 
             {setListItem}
-
             <Form
                 onInputChange={onInputChange}
                 onPasswordChange={onPasswordChange}
                 onTextAreaChange={onTextAreaChange}
+                onChecked={onChecked}
                 text={str}
-                name={name}
+                name={user}
+                isChecked={checkedValue}
                 clickSubmit={clickSubmit}
+                refs={refArr}
+                pw={pw}
              />
         </main>
     );

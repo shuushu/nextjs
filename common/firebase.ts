@@ -20,17 +20,10 @@ const fb = {
             });
         });
     },
-    writeReply: (params: { str: string; name: string; pw: string }): Promise<boolean> => {
-        const { str, name, pw } = params;
-        const data = {
-            name,
-            pw,
-            context: str,
-            time: firebase.database.ServerValue.TIMESTAMP,
-        };
-
+    writeReply: (params: { str: string; user?: string; pw?: string }): Promise<boolean> => {
+        const timeStamp = firebase.database.ServerValue.TIMESTAMP;
         return new Promise((resolve, reject) => {
-            firebase.database().ref('reply').push(data).then(() => {
+            firebase.database().ref('reply').push({...params, time: timeStamp}).then(() => {
                 resolve(true);
             }).catch((error) => {
                 reject(error);
@@ -43,7 +36,7 @@ const fb = {
                 const result = snap.val();
 
                 Object.keys(result).map((uk: string) => {
-                    if (result[uk].hasOwnProperty('pw')) {
+                    if (result[uk].hasOwnProperty('pw') && result[uk].pw.length > 0) {
                         // private
                         const promptPW = window.prompt('비밀번호 입력');
                         if (promptPW === result[uk].pw) {
