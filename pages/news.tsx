@@ -1,4 +1,5 @@
 import {NextPage} from 'next';
+import { useRouter } from 'next/router';
 import { BaseSyntheticEvent, useState, useEffect } from 'react';
 import { fb } from '../common/firebase';
 import Header from '@/Header';
@@ -16,6 +17,7 @@ interface PropsReplyList {
 }
 
 const View: NextPage<Props> = ({ userAgent }) => {
+    const router = useRouter();
     const [item, setList] = useState<PropsReplyList>({});
     const [user, setName] = useState('');
     const [pw, setPW] = useState('');
@@ -111,6 +113,8 @@ const View: NextPage<Props> = ({ userAgent }) => {
     return (
         <main>
             <Header />
+            <h3>{router.query.id}</h3>
+
             Your user agent: {userAgent}
 
             {setListItem}
