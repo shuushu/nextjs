@@ -1,5 +1,5 @@
 import {NextPage} from 'next';
-import Link from 'next/link'
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 import Crawling from '../common/crawling';
@@ -11,11 +11,12 @@ interface PropsNewsList {
     parag: null | string;
     link: string;
  }
+interface PropsRouterQuery {
+    [key: string]: any;
+}
 
-const Index: NextPage = () => {
-    const router = useRouter();
-    const params = router.query.id || 1;
-    console.log('params', params)
+const Index = ({ query }: { query: PropsRouterQuery }) => {
+    const params = query.id || 1;
     const [list, setList] = useState();
     const [page, setPage] = useState(0);
     const itemRender = () => {
@@ -34,23 +35,21 @@ const Index: NextPage = () => {
                 );
             });
         }
-    }
-    
+    };
     const renderPaging = (() => {
-        let str = []
-        for (let i = 1; i <= page; i+= 1 ) {
-            if (params === i) {
+        const str = [];
+        for (let i = 1; i <= page; i += 1) {
+            if (Number(params) === i) {
                 str.push(<strong key={`page-item${i}`} >{i}</strong>);
             } else {
                 str.push(<Link key={`page-item${i}`} href={`/index?id=${i}`} ><span>{i}</span></Link>);
             }
-            
         }
 
-        return str
-    })()
+        return str;
+    })();
 
-    function parseHTML (data: string) {
+    function parseHTML(data: string) {
         const $ = cheerio.load(data);
 
         const target = $('#m_topic_new li');
@@ -87,8 +86,8 @@ const Index: NextPage = () => {
         }
         return temp;
     }
-    function init () {
-        console.log('p', params)
+    function init() {
+        console.log('init')
         const craw = new Crawling(`http://www.itworld.co.kr/news?page=${params}`);
         craw.getData().then((res: string) => {
             const getItemData = parseHTML(res)
@@ -97,28 +96,23 @@ const Index: NextPage = () => {
     }
 
     useEffect(() => {
-        let isCancelled = false;
-
-        if (!isCancelled) {
-            init();
-            router.events.on('routeChangeStart', (e) => {
-                console.log('plat', params)
-            })
-        }
-
-        return () => {
-            isCancelled = true;
-        };
-    }, []);
+        init();
+        console.log('eplat', params);
+    }, [params]);
 
     return (
         <div>
             <ul>
-                { itemRender() }            
+                { itemRender() }
             </ul>
             { page > 0 && renderPaging }
         </div>
 
     );
+};
+
+Index.getInitialProps = ({query}: { query: PropsRouterQuery}) => {
+    return { query };
 }
+
 export default Index;
