@@ -1,6 +1,4 @@
-import {NextPage} from 'next';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 import Crawling from '../common/crawling';
 import cheerio from 'cheerio';
@@ -14,11 +12,16 @@ interface PropsNewsList {
 interface PropsRouterQuery {
     [key: string]: any;
 }
+interface PageProps {
+    str: string; 
+    link: string;
+}
 
 const Index = ({ query }: { query: PropsRouterQuery }) => {
     const params = query.id || 1;
+    const [isLoad, setLoad] = useState(true);
     const [list, setList] = useState();
-    const [page, setPage] = useState(0);
+    const [page, setPage] = useState<PageProps[]>([]);
     const itemRender = () => {
         if (list) {
             return list.map((item: PropsNewsList, idx: any) => {
@@ -36,18 +39,13 @@ const Index = ({ query }: { query: PropsRouterQuery }) => {
             });
         }
     };
-    const renderPaging = (() => {
-        const str = [];
-        for (let i = 1; i <= page; i += 1) {
-            if (Number(params) === i) {
-                str.push(<strong key={`page-item${i}`} >{i}</strong>);
-            } else {
-                str.push(<Link key={`page-item${i}`} href={`/index?id=${i}`} ><span>{i}</span></Link>);
-            }
-        }
-
-        return str;
-    })();
+    const renderPaging = page.map((i, idx: number) => {
+        return (
+            <span key={`item${idx}`}>
+                <a href={`/index?id=${i.link}`}>{i.str}</a>
+            </span>
+        )
+    })
 
     function parseHTML(data: string) {
         const $ = cheerio.load(data);
@@ -55,9 +53,22 @@ const Index = ({ query }: { query: PropsRouterQuery }) => {
         const target = $('#m_topic_new li');
         const pageNode = $('.fr .pagination.hidden-phone li');
         const temp: PropsNewsList[] = [];
+        const pageArr: PageProps[] = [];
         let cnt = -1;
 
-        setPage(pageNode.length)
+        
+
+        for (let i = 0; i < pageNode.length; i += 1) {
+            const pObj = cheerio(pageNode[i]);
+            const v = pObj.find('a').attr('href');
+            pageArr.push({
+                str: pObj.text(),
+                link: v.split('=')[1]
+            })
+            
+        }
+
+        setPage(pageArr);
 
         for (let i = 0; i < target.length; i += 1) {
             const tObj = cheerio(target[i]);
@@ -87,25 +98,35 @@ const Index = ({ query }: { query: PropsRouterQuery }) => {
         return temp;
     }
     function init() {
-        console.log('init')
         const craw = new Crawling(`http://www.itworld.co.kr/news?page=${params}`);
         craw.getData().then((res: string) => {
             const getItemData = parseHTML(res)
             setList(getItemData);
+            setLoad(false);
         });
     }
 
     useEffect(() => {
-        init();
-        console.log('eplat', params);
+        let isCancelled = false;
+
+        if (!isCancelled) {
+            init();
+        }
+        
+        console.log('copmdidMount')
+        return () => {
+            isCancelled = true;
+        };
     }, [params]);
 
     return (
         <div>
+            { isLoad ? <div>데이터 가져오는 중....</div> : 
             <ul>
                 { itemRender() }
+                { page && renderPaging }
             </ul>
-            { page > 0 && renderPaging }
+            }
         </div>
 
     );

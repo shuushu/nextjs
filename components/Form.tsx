@@ -1,4 +1,4 @@
-import { SFC, forwardRef, useImperativeHandle } from 'react'
+import { SFC } from 'react'
 
 interface Props {
     text?: string;
