@@ -4,25 +4,25 @@ import { BaseSyntheticEvent, useState, useEffect } from 'react';
 import { fb } from '../common/firebase';
 import Header from '@/Header';
 import Form from '@/Form';
-import Content from '@/Content';
 import * as firebase from 'firebase/app';
 import 'firebase/database';
+import News from "../pages/news";
 
 interface Props {
-    userAgent?: string;
+    seq: number
 }
 
 interface PropsReplyList {
     [key: string]: any;
 }
 
-const View: NextPage<Props> = ({ userAgent }) => {
+const Reply = ({ seq }: Props) => {
     const router = useRouter();
     const [item, setList] = useState<PropsReplyList>({});
     const [user, setName] = useState('');
     const [pw, setPW] = useState('');
     const [str, setValue] = useState('');
-    const [checkedValue, setCheck] = useState(false)
+    const [checkedValue, setCheck] = useState(false);
     const refArr = Array(3);
 
     function onInputChange(e: BaseSyntheticEvent) {
@@ -114,8 +114,6 @@ const View: NextPage<Props> = ({ userAgent }) => {
         <main>
             <Header />
             <h3>{router.query.id}</h3>
-            <Content />
-            Your user agent: {userAgent}
 
             {setListItem}
             <Form
@@ -134,8 +132,8 @@ const View: NextPage<Props> = ({ userAgent }) => {
     );
 };
 
-View.getInitialProps = async ({ req }) => {
-  const userAgent = req ? req.headers['user-agent'] : navigator.userAgent;
-  return { userAgent };
+Reply.getInitialProps = ({ seq }: Props) => {
+    return { seq };
 };
-export default View;
+
+export default Reply;

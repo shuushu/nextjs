@@ -13,7 +13,7 @@ interface PropsRouterQuery {
     [key: string]: any;
 }
 interface PageProps {
-    str: string; 
+    str: string;
     link: string;
 }
 
@@ -44,7 +44,7 @@ const Index = ({ query }: { query: PropsRouterQuery }) => {
             <span key={`item${idx}`}>
                 <a href={`/index?id=${i.link}`}>{i.str}</a>
             </span>
-        )
+        );
     })
 
     function parseHTML(data: string) {
@@ -55,17 +55,13 @@ const Index = ({ query }: { query: PropsRouterQuery }) => {
         const temp: PropsNewsList[] = [];
         const pageArr: PageProps[] = [];
         let cnt = -1;
-
-        
-
         for (let i = 0; i < pageNode.length; i += 1) {
             const pObj = cheerio(pageNode[i]);
             const v = pObj.find('a').attr('href');
             pageArr.push({
                 str: pObj.text(),
-                link: v.split('=')[1]
-            })
-            
+                link: v.split('=')[1],
+            });
         }
 
         setPage(pageArr);
@@ -95,33 +91,44 @@ const Index = ({ query }: { query: PropsRouterQuery }) => {
                 }
             }
         }
-        return temp;
+        return { item: temp, page: pageArr };
     }
     function init() {
         const craw = new Crawling(`http://www.itworld.co.kr/news?page=${params}`);
         craw.getData().then((res: string) => {
-            const getItemData = parseHTML(res)
-            setList(getItemData);
+            const { item, page } = parseHTML(res);
+            const parseItem = {
+                seq: params,
+                data: item,
+                page,
+            };
+            sessionStorage.setItem('list', JSON.stringify(parseItem));
+            setList(item);
             setLoad(false);
         });
     }
 
     useEffect(() => {
-        let isCancelled = false;
+        const getStorage = sessionStorage.getItem('list');
 
-        if (!isCancelled) {
+        if (getStorage) {
+            const initObj = JSON.parse(getStorage);
+
+            if (initObj.seq === params) {
+                setList(initObj.data);
+                setPage(initObj.page);
+                setLoad(false);
+            } else {
+                init();
+            }
+        } else {
             init();
         }
-        
-        console.log('copmdidMount')
-        return () => {
-            isCancelled = true;
-        };
     }, [params]);
 
     return (
         <div>
-            { isLoad ? <div>데이터 가져오는 중....</div> : 
+            { isLoad ? <div>데이터 가져오는 중....</div> :
             <ul>
                 { itemRender() }
                 { page && renderPaging }
