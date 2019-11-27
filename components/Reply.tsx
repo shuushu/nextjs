@@ -1,12 +1,11 @@
 import {NextPage} from 'next';
-import { useRouter } from 'next/router';
 import { BaseSyntheticEvent, useState, useEffect } from 'react';
+import { inputValue, inputCheck } from '../common/util';
 import { fb } from '../common/firebase';
 import Header from '@/Header';
 import Form from '@/Form';
 import * as firebase from 'firebase/app';
 import 'firebase/database';
-import News from "../pages/news";
 
 interface Props {
     seq: number
@@ -17,52 +16,45 @@ interface PropsReplyList {
 }
 
 const Reply = ({ seq }: Props) => {
-    const router = useRouter();
-    const [item, setList] = useState<PropsReplyList>({});
-    const [user, setName] = useState('');
-    const [pw, setPW] = useState('');
-    const [str, setValue] = useState('');
-    const [checkedValue, setCheck] = useState(false);
+    const checkMinLength = (v: string) => v.length < 255;
+    const inputName = inputValue('', checkMinLength)
+    const inputPassword = inputValue('', checkMinLength)
+    const valueTextArea = inputValue('', checkMinLength)
+    const inputCheckProps = inputCheck(true)
+
+    const [item, setList] = useState<PropsReplyList | null>(null);
     const refArr = Array(3);
 
-    function onInputChange(e: BaseSyntheticEvent) {
-        setName(e.target.value);
-    }
-
-    function onPasswordChange(e: BaseSyntheticEvent) {
-        setPW(e.target.value);
-    }
-
-    function onTextAreaChange(e: BaseSyntheticEvent) {
-        setValue(e.target.value);
-    }
-
-    function onChecked() {
-        setCheck(!checkedValue);
-    }
 
     function clickSubmit() {
-        if (str.length > 0) {
-            const params: any = { str };
-            if (!checkedValue) {
-                if (user.length <= 0 ) {
+        if (valueTextArea.value) {
+            const params: {
+                str: string;
+                user?: string;
+                pw?: string;
+            } = {
+                str: valueTextArea.value,
+            };
+
+            if (!inputCheckProps.value) {
+                if (!inputName.value) {
                     alert('비공개 입력시 아이디 입력 필수');
                     refArr[0].focus();
                     return;
                 }
-                if (pw.length <= 0) {
+                if (!inputPassword.value) {
                     alert('비공개 입력시 비밀번호 입력 필수');
                     refArr[1].focus();
                     return;
                 }
-                params.user = user;
-                params.pw = pw;
+                params.user = inputName.value;
+                params.pw = inputPassword.value;
             }
-            fb.writeReply(params).then((result) => {
+            fb.writeReply(seq, params).then((result) => {
                 if (result) {
-                    setValue('');
-                    setName('');
-                    setPW('');
+                    inputName.triggerSetValue('');
+                    inputPassword.triggerSetValue('');
+                    valueTextArea.triggerSetValue('');
                 } else {
                     alert('error');
                 }
@@ -74,61 +66,58 @@ const Reply = ({ seq }: Props) => {
 
     }
 
-    function removeReply(key: string) {
-        fb.removeReply(key);
-    }
-
     function convertoDate(v: string) {
         const date = new Date(v);
         return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
     }
 
-    const setListItem = Object.keys(item).map((i: string) => {
-        const { time, str, user } = item[i];
-        return (
-            <div key={`item${time}`}>
-                <div>
-                    {user} {convertoDate(time)}
-                    {user && <button onClick={() => removeReply(time)}>delete</button> }
+    const setListItem = (() => {
+        if (item) {
+        return Object.keys(item).map((i: string) => {
+            const { time, str, user } = item[i];
+            return (
+                <div key={`item${time}`}>
+                    <div>
+                        {user} {convertoDate(time)}
+                        {user && <button onClick={() => fb.removeReply(seq, time)}>delete</button> }
+                    </div>
+                    <p>{str}</p>
                 </div>
-                <p>{str}</p>
-            </div>
-        );
-    });
+            );
+        })
+        } else {
+            return <div>nodata</div>
+        }
+    })();
 
     useEffect(() => {
         let isCancelled = false;
-
-        firebase.database().ref('reply').on('value', (result: any) => {
-            if (result.val() && !isCancelled) {
-                setList(result.val());
-            }
+        firebase.database().ref(`reply/${seq}`).on('value', (result: any) => {
+            setList(result.val());
         });
 
         return () => {
             isCancelled = true;
         };
-    }, [str]);
+    }, []);
 
     return (
-        <main>
-            <Header />
-            <h3>{router.query.id}</h3>
-
-            {setListItem}
+        <section>
             <Form
-                onInputChange={onInputChange}
-                onPasswordChange={onPasswordChange}
-                onTextAreaChange={onTextAreaChange}
-                onChecked={onChecked}
-                text={str}
-                name={user}
-                isChecked={checkedValue}
+                onInputChange={inputName.onChange}
+                onPasswordChange={inputPassword.onChange}
+                onTextAreaChange={valueTextArea.onChange}
+                onChecked={inputCheckProps.onChange}
+                text={valueTextArea.value}
+                name={inputName.value}
+                isChecked={inputCheckProps.value}
                 clickSubmit={clickSubmit}
                 refs={refArr}
-                pw={pw}
+                pw={inputPassword.value}
              />
-        </main>
+
+            { setListItem }
+        </section>
     );
 };
 

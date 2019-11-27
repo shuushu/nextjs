@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import Crawling from '../common/crawling';
+import { crawling, inputValue } from '../common/util';
 import cheerio from 'cheerio';
 
 interface PropsNewsList {
@@ -42,16 +42,16 @@ const Index = ({ query }: { query: PropsRouterQuery }) => {
     const renderPaging = page.map((i, idx: number) => {
         return (
             <span key={`item${idx}`}>
-                <a href={`/index?id=${i.link}`}>{i.str}</a>
+                <Link href={`/index?id=${i.link}`} as={'/'}><a>{i.str}</a></Link>
             </span>
         );
-    })
+    });
 
     function parseHTML(data: string) {
         const $ = cheerio.load(data);
 
         const target = $('#m_topic_new li');
-        const pageNode = $('.fr .pagination.hidden-phone li');
+        const pageNode = $('.pagination').eq(0).find('li');
         const temp: PropsNewsList[] = [];
         const pageArr: PageProps[] = [];
         let cnt = -1;
@@ -63,7 +63,6 @@ const Index = ({ query }: { query: PropsRouterQuery }) => {
                 link: v.split('=')[1],
             });
         }
-
         setPage(pageArr);
 
         for (let i = 0; i < target.length; i += 1) {
@@ -94,8 +93,8 @@ const Index = ({ query }: { query: PropsRouterQuery }) => {
         return { item: temp, page: pageArr };
     }
     function init() {
-        const craw = new Crawling(`http://www.itworld.co.kr/news?page=${params}`);
-        craw.getData().then((res: string) => {
+        crawling(`http://www.itworld.co.kr/news?page=${params}`).then((res: any) => {
+
             const { item, page } = parseHTML(res);
             const parseItem = {
                 seq: params,
@@ -141,6 +140,6 @@ const Index = ({ query }: { query: PropsRouterQuery }) => {
 
 Index.getInitialProps = ({query}: { query: PropsRouterQuery}) => {
     return { query };
-}
+};
 
 export default Index;

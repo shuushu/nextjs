@@ -1,7 +1,7 @@
 import { SFC } from 'react'
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import Crawling from '../common/crawling';
+import { crawling } from '../common/util';
 import cheerio from 'cheerio';
 
 interface PropsNewsList {
@@ -27,7 +27,7 @@ const Content: SFC<Props> = (props) => {
 			normalizeWhitespace: true,
 			decodeEntities: false
 		});
-		const contNode = $('.contents_body .node_body.cb')
+		const contNode = $('.node_body.cb')
 
 		if (contNode.length > 0) {
 			const str: any = contNode.html()
@@ -46,13 +46,11 @@ const Content: SFC<Props> = (props) => {
 		
     }
     function init() {
-		console.log(params)
-        const craw = new Crawling(`http://www.itworld.co.kr/news/${params}`);
-        craw.getData().then((res: string) => {
-			const getData = parseHTML(res)
+        crawling(`http://www.itworld.co.kr/news/${params}`).then((res: any) => {
+            const getData = parseHTML(res)
             setView(getData);
             setLoad(false);
-        });
+        })
     }
 
     useEffect(() => {
@@ -69,9 +67,9 @@ const Content: SFC<Props> = (props) => {
     }, [props]);
 
     return (
-        <div>
+        <>
             { isLoad ? <div>데이터 가져오는 중....</div> :  <article dangerouslySetInnerHTML={ {__html: view} }></article> }
-        </div>
+        </>
 
     );
 };

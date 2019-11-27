@@ -22,15 +22,15 @@ const Form: SFC<Props> = (props) => {
                 <legend>댓글 입력 폼 </legend>
                 <div className="test">
                     <input id="public" checked={isChecked} onChange={onChecked} type="checkbox"/>
-                    <label htmlFor="public">공개</label>
+                    <label htmlFor="public">{ isChecked ? '공개' : '비공개' }</label>
 
                     { !isChecked &&
-                    <div>
+                    <>
                         <label htmlFor="ids">NAME</label>
-                        <input id="ids" type="text" onChange={onInputChange} ref={(ref) => { refs[0] = ref }} value={name} />
+                        <input id="ids" placeholder="이름을 입력하세요" type="text" onChange={onInputChange} ref={(ref) => { refs[0] = ref }} value={name} />
                         <label htmlFor="pws" >PW</label>
-                        <input id="pws" type="password" onChange={onPasswordChange} ref={(ref) => { refs[1] = ref }} value={pw} />
-                    </div>
+                        <input id="pws" placeholder="비밀번를 입력하세요" type="password" onChange={onPasswordChange} ref={(ref) => { refs[1] = ref }} value={pw} />
+                    </>
                     }
                 </div>
 

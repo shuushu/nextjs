@@ -20,18 +20,18 @@ const fb = {
             });
         });
     },
-    writeReply: (params: { str: string; user?: string; pw?: string }): Promise<boolean> => {
+    writeReply: (seq: number, params: { str: string; user?: string; pw?: string }): Promise<boolean> => {
         const timeStamp = firebase.database.ServerValue.TIMESTAMP;
         return new Promise((resolve, reject) => {
-            firebase.database().ref('reply').push({...params, time: timeStamp}).then(() => {
+            firebase.database().ref(`reply/${seq}`).push({...params, time: timeStamp}).then(() => {
                 resolve(true);
             }).catch((error) => {
                 reject(error);
             });
         });
     },
-    removeReply: (key: string) => {
-        firebase.database().ref('reply').orderByChild('time').equalTo(key).once('value', (snap) => {
+    removeReply: (seq: number, key: string) => {
+        firebase.database().ref(`reply/${seq}`).orderByChild('time').equalTo(key).once('value', (snap) => {
             if (snap) {
                 const result = snap.val();
 
@@ -40,14 +40,14 @@ const fb = {
                         // private
                         const promptPW = window.prompt('비밀번호 입력');
                         if (promptPW === result[uk].pw) {
-                            firebase.database().ref(`reply/${uk}`).remove();
+                            firebase.database().ref(`reply/${seq}/${uk}`).remove();
                         } else if (promptPW !== null) {
                             alert('비밀번호 다름');
                         }
 
                     } else {
                         console.log('공개');
-                        firebase.database().ref(`reply/${uk}`).remove();
+                        firebase.database().ref(`reply/${seq}/${uk}`).remove();
                     }
                 });
             }
