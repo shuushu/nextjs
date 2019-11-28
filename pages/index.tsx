@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { crawling, inputValue } from '../common/util';
+import { crawling } from '../common/util';
+import '../asset/style.scss';
 import cheerio from 'cheerio';
 
 interface PropsNewsList {
@@ -26,13 +27,17 @@ const Index = ({ query }: { query: PropsRouterQuery }) => {
         if (list) {
             return list.map((item: PropsNewsList, idx: any) => {
                 return (
-                    <li key={idx} >
+                    <li key={idx} className="list" >
                         <Link href={`/news?id=${item.link}`} as={`/news`}>
-                        <div>
-                            <h2>{item.title}</h2>
-                            {item.path && <img src={item.path} alt="" />}
-                            <p>{item.parag}</p>
-                        </div>
+                        <a>
+                            {item.path &&
+                                <span className="thumb"><img src={item.path} alt="" /></span>
+                            }
+                            <div>
+                                <p className="tit">{item.title}</p>
+                                <p className="parag">{item.parag}</p>
+                            </div>
+                        </a>
                         </Link>
                     </li>
                 );
@@ -41,7 +46,7 @@ const Index = ({ query }: { query: PropsRouterQuery }) => {
     };
     const renderPaging = page.map((i, idx: number) => {
         return (
-            <span key={`item${idx}`}>
+            <span className="item" key={`item${idx}`}>
                 <Link href={`/index?id=${i.link}`} as={'/'}><a>{i.str}</a></Link>
             </span>
         );
@@ -109,7 +114,7 @@ const Index = ({ query }: { query: PropsRouterQuery }) => {
 
     useEffect(() => {
         const getStorage = sessionStorage.getItem('list');
-
+        setLoad(true);
         if (getStorage) {
             const initObj = JSON.parse(getStorage);
 
@@ -126,12 +131,15 @@ const Index = ({ query }: { query: PropsRouterQuery }) => {
     }, [params]);
 
     return (
-        <div>
-            { isLoad ? <div>데이터 가져오는 중....</div> :
-            <ul>
-                { itemRender() }
-                { page && renderPaging }
-            </ul>
+        <div className="card">
+            { !isLoad &&
+                <>
+                <ul>
+                    { itemRender() }
+                </ul>
+                <hr/>
+                { page && <div className="paging">{ renderPaging }</div> }
+                </>
             }
         </div>
 

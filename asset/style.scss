@@ -1,0 +1,114 @@
+html, body, li, ul, #__next{
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+a{ text-decoration: none }
+ul,li{
+  list-style: none;
+}
+
+@mixin ell($v) {
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-all;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $v;
+}
+
+.card:empty {
+  display: flex;
+  width: 100%;
+  height: 100%;
+
+  background-image:
+          //radial-gradient( circle 50px at 50px 50px, lightgray 99%, transparent 0 ),
+          linear-gradient( lightgray 100px, transparent 0 ),
+          linear-gradient( 100deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0) 80% ),
+          linear-gradient( lightgray 20px, transparent 0 ),
+          linear-gradient( lightgray 20px, transparent 0 ),
+          linear-gradient( lightgray 20px, transparent 0 ),
+          linear-gradient( lightgray 20px, transparent 0 );
+
+  background-repeat: repeat-y;
+
+  background-size:
+          100px 200px, /* circle */
+          150px 200px, /* highlight */
+          60% 200px,
+          40% 200px,
+          30% 200px,
+          50% 200px;
+
+  background-position:
+          20px 20px, /* circle */
+          0 0, /* highlight */
+          150px 20px,
+          150px 50px,
+          150px 80px,
+          150px 110px;
+
+  animation: shine 1s infinite;
+}
+
+@keyframes shine {
+  to {
+    background-position:
+            20px 20px,
+            100% 0, /* move highlight to right */
+            150px 20px,
+            150px 50px,
+            150px 80px,
+            150px 110px;
+  }
+}
+
+.list{
+  position: relative;
+  margin: 20px 10px;
+  .thumb{
+    position: relative;
+    float: left;
+    display: block;
+    width: 120px;
+    margin-right: 10px;
+    font-size: 0;
+    img{width: 100%;}
+    &::before{
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      border: 1px solid #000;
+      box-sizing: border-box;
+      opacity: .1;
+    }
+  }
+  .tit{
+    font-weight: bold;
+    font-size: 16px;
+  }
+  .parag{
+    @include ell(2);
+    font-size: 13px;
+    line-height: 1.4;
+    color: #666;
+  }
+}
+
+.paging{
+  margin: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+  a{
+    display: inline-block;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+}

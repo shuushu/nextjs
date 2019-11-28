@@ -21,6 +21,7 @@ const Content: SFC<Props> = (props) => {
 	const { params } = props
     const [isLoad, setLoad] = useState(true);
     const [view, setView] = useState();
+    const [title, setTitle] = useState('');
 
     function parseHTML(data: string) {
 		const $ = cheerio.load(data, {
@@ -28,7 +29,8 @@ const Content: SFC<Props> = (props) => {
 			decodeEntities: false
 		});
 		const contNode = $('.node_body.cb')
-
+        const titleText = $('.node_title').eq(0).text()
+        setTitle(titleText)
 		if (contNode.length > 0) {
 			const str: any = contNode.html()
 			if (str.indexOf('/files/') > 0) {
@@ -68,7 +70,12 @@ const Content: SFC<Props> = (props) => {
 
     return (
         <>
-            { isLoad ? <div>데이터 가져오는 중....</div> :  <article dangerouslySetInnerHTML={ {__html: view} }></article> }
+            { isLoad ? <div>데이터 가져오는 중....</div> :
+                <>
+                    <h1>{title}</h1>
+                    <article dangerouslySetInnerHTML={ {__html: view} }></article>
+                </>
+            }
         </>
 
     );
