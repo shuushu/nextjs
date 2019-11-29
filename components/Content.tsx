@@ -71,10 +71,10 @@ const Content: SFC<Props> = (props) => {
     return (
         <>
             { isLoad ? <div>데이터 가져오는 중....</div> :
-                <>
+                <article className="content-view">
                     <h1>{title}</h1>
-                    <article dangerouslySetInnerHTML={ {__html: view} }></article>
-                </>
+                    <div dangerouslySetInnerHTML={ {__html: view} }></div>
+                </article>
             }
         </>
 

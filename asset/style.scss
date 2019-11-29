@@ -1,4 +1,4 @@
-html, body, li, ul, #__next{
+html, body, li, ul, #__next, p{
   height: 100%;
   margin: 0;
   padding: 0;
@@ -67,6 +67,7 @@ ul,li{
 .list{
   position: relative;
   margin: 20px 10px;
+  overflow: hidden;
   .thumb{
     position: relative;
     float: left;
@@ -89,7 +90,11 @@ ul,li{
   }
   .tit{
     font-weight: bold;
-    font-size: 16px;
+    font-size: 15px;
+    margin-bottom: 10px;
+    &.test{
+      color:red
+    }
   }
   .parag{
     @include ell(2);
@@ -104,11 +109,17 @@ ul,li{
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 16px;
   a{
     display: inline-block;
-    padding: 5px 10px;
+    padding: 5px 0;
+    width: 20px;
+    text-align: center;
+    font-size: 12px;
     border: 1px solid #ccc;
     border-radius: 5px;
   }
+}
+
+.content-view{
+
 }

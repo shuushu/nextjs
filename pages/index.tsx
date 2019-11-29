@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { crawling } from '../common/util';
-import '../asset/style.scss';
+import main from '../asset/style.scss';
 import cheerio from 'cheerio';
 
 interface PropsNewsList {
@@ -27,16 +27,14 @@ const Index = ({ query }: { query: PropsRouterQuery }) => {
         if (list) {
             return list.map((item: PropsNewsList, idx: any) => {
                 return (
-                    <li key={idx} className="list" >
+                    <li key={idx} className={main.list} >
                         <Link href={`/news?id=${item.link}`} as={`/news`}>
                         <a>
                             {item.path &&
-                                <span className="thumb"><img src={item.path} alt="" /></span>
+                                <span className={main.thumb}><img  src={item.path} alt="" /></span>
                             }
-                            <div>
-                                <p className="tit">{item.title}</p>
-                                <p className="parag">{item.parag}</p>
-                            </div>
+                            <p className={[main.tit, main.test].join(' ')}>{item.title}</p>
+                            <p className={main.parag}>{item.parag}</p>
                         </a>
                         </Link>
                     </li>
@@ -46,7 +44,7 @@ const Index = ({ query }: { query: PropsRouterQuery }) => {
     };
     const renderPaging = page.map((i, idx: number) => {
         return (
-            <span className="item" key={`item${idx}`}>
+            <span className={main.item} key={`item${idx}`}>
                 <Link href={`/index?id=${i.link}`} as={'/'}><a>{i.str}</a></Link>
             </span>
         );
@@ -131,14 +129,14 @@ const Index = ({ query }: { query: PropsRouterQuery }) => {
     }, [params]);
 
     return (
-        <div className="card">
+        <div className={main.card}>
             { !isLoad &&
                 <>
                 <ul>
                     { itemRender() }
                 </ul>
                 <hr/>
-                { page && <div className="paging">{ renderPaging }</div> }
+                { page && <div className={main.paging}>{ renderPaging }</div> }
                 </>
             }
         </div>
