@@ -6,7 +6,7 @@ import Header from '@/Header';
 import Form from '@/Form';
 import * as firebase from 'firebase/app';
 import 'firebase/database';
-
+import style from '../asset/style.scss'
 interface Props {
     seq: number
 }
@@ -76,28 +76,32 @@ const Reply = ({ seq }: Props) => {
         return Object.keys(item).map((i: string) => {
             const { time, str, user } = item[i];
             return (
-                <div key={`item${time}`}>
-                    <div>
+                <div key={`item${time}`} className={style.item}>
+                    <div className={style.options}>
                         {user} {convertoDate(time)}
-                        {user && <button onClick={() => fb.removeReply(seq, time)}>delete</button> }
+                        {user && <button className={style.btnDelete} onClick={() => fb.removeReply(seq, time)}>delete</button> }
                     </div>
                     <p>{str}</p>
                 </div>
             );
         })
         } else {
-            return <div>nodata</div>
+            return <div className={style.nodata}>nodata</div>
         }
     })();
 
     useEffect(() => {
+        const refs = firebase.database().ref(`reply/${seq}`);
         let isCancelled = false;
-        firebase.database().ref(`reply/${seq}`).on('value', (result: any) => {
-            setList(result.val());
-        });
+        if (!isCancelled) {
+            refs.on('value', (result: any) => {
+                setList(result.val());
+            });
+        }
 
         return () => {
             isCancelled = true;
+            refs.off('value')
         };
     }, []);
 
@@ -115,8 +119,10 @@ const Reply = ({ seq }: Props) => {
                 refs={refArr}
                 pw={inputPassword.value}
              />
+            <div className={style.replyWrap}>
+                { setListItem }
+            </div>
 
-            { setListItem }
         </section>
     );
 };

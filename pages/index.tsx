@@ -33,7 +33,7 @@ const Index = ({ query }: { query: PropsRouterQuery }) => {
                             {item.path &&
                                 <span className={main.thumb}><img  src={item.path} alt="" /></span>
                             }
-                            <p className={[main.tit, main.test].join(' ')}>{item.title}</p>
+                            <p className={main.tit}>{item.title}</p>
                             <p className={main.parag}>{item.parag}</p>
                         </a>
                         </Link>
@@ -85,7 +85,12 @@ const Index = ({ query }: { query: PropsRouterQuery }) => {
 
                 if (tObj.find('.fit_image').attr('src')) {
                     const path = tObj.find('.fit_image').attr('src');
-                    temp[cnt].path = 'http://files.itworld.co.kr/' + path.split('/files/itworld')[1];
+                    const regex = /(\/files\/itworld\/)/g;
+                    if (regex.test(path)) {
+                        temp[cnt].path = 'http://files.itworld.co.kr/' + path.split('/files/itworld')[1];
+                    } else {
+                        const regex2 = /(\/files\/ciokr\/)/g;
+                    }
                 }
 
                 if (tObj.find('#m_topic_news_list_summary').text().length > 0) {

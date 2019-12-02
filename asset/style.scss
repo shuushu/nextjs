@@ -1,4 +1,4 @@
-html, body, li, ul, #__next, p{
+html, body, li, ul, #__next, p, figure{
   height: 100%;
   margin: 0;
   padding: 0;
@@ -7,6 +7,23 @@ a{ text-decoration: none }
 ul,li{
   list-style: none;
 }
+button, img{
+  border: 0;
+}
+input, textarea, button{
+  vertical-align: middle;
+}
+input[type=text],
+input[type=email],
+input[type=password]{
+  height: 30px;
+  font-size: 14px;
+  width: 100px;
+  margin: 0;
+  padding: 0;
+}
+$wh: 13px;
+
 
 @mixin ell($v) {
   display: -webkit-box;
@@ -64,6 +81,19 @@ ul,li{
   }
 }
 
+/*
+:local(.cc1) {
+  background: red;
+  color: yellow;
+}
+
+:local(.ss2) {
+  composes: cc1;
+  background: blue;
+}
+*/
+
+
 .list{
   position: relative;
   margin: 20px 10px;
@@ -120,6 +150,82 @@ ul,li{
   }
 }
 
-.content-view{
+.contentView{
+  .title{
+    font-size: 20px;
+    margin: $wh;
+  }
+  .view{
+    margin: $wh;
+  }
+  img{
+    max-width: 100%;
+    height: auto;
+  }
+}
 
+.formWrap{
+  margin: 0 $wh;
+  font-size: 14px;
+  .optionsWrap{
+    display: flex;
+    justify-content: space-between;
+  }
+  .options {
+    width: 49%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    overflow: hidden;
+    label{
+      width: 50px;
+      display: inline-block;
+      text-align: left;
+      padding: 5px 0;
+    }
+    input{
+      width: 100%;
+    }
+  }
+  .textArea{
+    width: 100%;
+    margin: 10px 0;
+    padding: 10px;
+    box-sizing: border-box;
+
+  }
+}
+
+.submit{
+  width: 100%;
+  text-align: center;
+  color: white;
+  padding: 10px 0;
+  background-color: darkslateblue;
+}
+.nodata{
+  text-align: center;
+  padding: 30px 0;
+  border: 1px solid #ccc;
+}
+
+.replyWrap{
+  margin: $wh;
+  display: flex;
+  flex-direction: column-reverse;
+  .item{
+    padding: 10px 0;
+    border-bottom: 1px dashed #ccc;
+  }
+  .options{
+    color: #666;
+    font-size: 13px;
+  }
+  p{
+    margin: 10px 0;
+  }
+  .btnDelete{
+    margin-left: 10px;
+  }
 }
