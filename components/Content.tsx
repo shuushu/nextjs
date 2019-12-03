@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { crawling } from '../common/util';
 import style from '../asset/style.scss';
+import Loading from '@/Loading';
 import cheerio from 'cheerio';
 
 interface PropsNewsList {
@@ -71,7 +72,7 @@ const Content: SFC<Props> = (props) => {
 
     return (
         <>
-            { isLoad ? <div>데이터 가져오는 중....</div> :
+            { isLoad ? <Loading /> :
                 <article className={style.contentView}>
                     <h1 className={style.title}>{title}</h1>
                     <hr/>

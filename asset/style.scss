@@ -1,5 +1,7 @@
-html, body, li, ul, #__next, p, figure{
+html, body, body > div{
   height: 100%;
+}
+html, body, li, ul, body > div, p, figure{
   margin: 0;
   padding: 0;
 }
@@ -33,38 +35,39 @@ $wh: 13px;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: $v;
 }
-
-.card:empty {
+.itemWraping{
+  overflow: hidden;
+}
+.skeleton {
   display: flex;
   width: 100%;
   height: 100%;
-
   background-image:
           //radial-gradient( circle 50px at 50px 50px, lightgray 99%, transparent 0 ),
-          linear-gradient( lightgray 100px, transparent 0 ),
+          linear-gradient( lightgray 70px, transparent 0 ),
           linear-gradient( 100deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0) 80% ),
-          linear-gradient( lightgray 20px, transparent 0 ),
-          linear-gradient( lightgray 20px, transparent 0 ),
-          linear-gradient( lightgray 20px, transparent 0 ),
-          linear-gradient( lightgray 20px, transparent 0 );
+          linear-gradient( lightgray 15px, transparent 0 ),
+          linear-gradient( lightgray 15px, transparent 0 ),
+          linear-gradient( lightgray 15px, transparent 0 ),
+          linear-gradient( lightgray 15px, transparent 0 );
 
   background-repeat: repeat-y;
 
   background-size:
-          100px 200px, /* circle */
-          150px 200px, /* highlight */
-          60% 200px,
-          40% 200px,
-          30% 200px,
-          50% 200px;
+          80px 140px, /* circle */
+          150px 140px, /* highlight */
+          60% 140px,
+          40% 140px,
+          30% 140px,
+          50% 140px;
 
   background-position:
-          20px 20px, /* circle */
+          13px 13px, /* circle */
           0 0, /* highlight */
-          150px 20px,
-          150px 50px,
-          150px 80px,
-          150px 110px;
+          110px 13px,
+          110px 50px,
+          110px 80px,
+          110px 110px;
 
   animation: shine 1s infinite;
 }
@@ -72,12 +75,12 @@ $wh: 13px;
 @keyframes shine {
   to {
     background-position:
-            20px 20px,
+            13px 13px,
             100% 0, /* move highlight to right */
-            150px 20px,
-            150px 50px,
-            150px 80px,
-            150px 110px;
+            110px 13px,
+            110px 50px,
+            110px 80px,
+            110px 110px;
   }
 }
 
@@ -139,7 +142,7 @@ $wh: 13px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  a{
+  a, em{
     display: inline-block;
     padding: 5px 0;
     width: 20px;
@@ -147,6 +150,12 @@ $wh: 13px;
     font-size: 12px;
     border: 1px solid #ccc;
     border-radius: 5px;
+  }
+  em{
+    background-color: black;
+    border: 1px solid #000;
+    color: white;
+    font-style: normal;
   }
 }
 
@@ -227,5 +236,52 @@ $wh: 13px;
   }
   .btnDelete{
     margin-left: 10px;
+  }
+}
+
+
+// Loading
+.loading{
+  position: fixed;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(black, .3);
+  align-items: center;
+  justify-content: center;
+  left: 0;
+  top: 0;
+
+  .lds-ripple {
+    display: inline-block;
+    position: relative;
+    width: 80px;
+    height: 80px;
+  }
+  .lds-ripple div {
+    position: absolute;
+    border: 4px solid #fff;
+    opacity: 1;
+    border-radius: 50%;
+    animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+  }
+  .lds-ripple div:nth-child(2) {
+    animation-delay: -0.5s;
+  }
+  @keyframes lds-ripple {
+    0% {
+      top: 36px;
+      left: 36px;
+      width: 0;
+      height: 0;
+      opacity: 1;
+    }
+    100% {
+      top: 0px;
+      left: 0px;
+      width: 72px;
+      height: 72px;
+      opacity: 0;
+    }
   }
 }

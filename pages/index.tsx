@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { crawling } from '../common/util';
 import main from '../asset/style.scss';
+import Loading from '@/Loading';
 import cheerio from 'cheerio';
 
 interface PropsNewsList {
@@ -43,11 +44,20 @@ const Index = ({ query }: { query: PropsRouterQuery }) => {
         }
     };
     const renderPaging = page.map((i, idx: number) => {
-        return (
-            <span className={main.item} key={`item${idx}`}>
-                <Link href={`/index?id=${i.link}`} as={'/'}><a>{i.str}</a></Link>
-            </span>
-        );
+        const N = params === '0' ? '1' : String(params);
+        if (i.str === N) {
+            return (
+                <span className={main.item} key={`item${idx}`}>
+                    <em>{i.str}</em>
+                </span>
+            );
+        } else {
+            return (
+                <span className={main.item} key={`item${idx}`}>
+                    <Link href={`/index?id=${i.link}`} as={'/'}><a>{i.str}</a></Link>
+                </span>
+            );
+        }
     });
 
     function parseHTML(data: string) {
@@ -101,6 +111,7 @@ const Index = ({ query }: { query: PropsRouterQuery }) => {
         return { item: temp, page: pageArr };
     }
     function init() {
+        setLoad(true);
         crawling(`http://www.itworld.co.kr/news?page=${params}`).then((res: any) => {
 
             const { item, page } = parseHTML(res);
@@ -112,12 +123,14 @@ const Index = ({ query }: { query: PropsRouterQuery }) => {
             sessionStorage.setItem('list', JSON.stringify(parseItem));
             setList(item);
             setLoad(false);
+        }).catch(() => {
+            alert('네트워크 에러')
+            setLoad(false);
         });
     }
 
     useEffect(() => {
         const getStorage = sessionStorage.getItem('list');
-        setLoad(true);
         if (getStorage) {
             const initObj = JSON.parse(getStorage);
 
@@ -134,17 +147,17 @@ const Index = ({ query }: { query: PropsRouterQuery }) => {
     }, [params]);
 
     return (
-        <div className={main.card}>
-            { !isLoad &&
+        <>
+            { isLoad ? <Loading addClass={`skeleton`}/> :
                 <>
-                <ul>
+                <ul className={main.itemWraping}>
                     { itemRender() }
                 </ul>
                 <hr/>
                 { page && <div className={main.paging}>{ renderPaging }</div> }
                 </>
             }
-        </div>
+        </>
 
     );
 };
